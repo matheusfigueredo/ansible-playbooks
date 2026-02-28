@@ -1,7 +1,15 @@
 - name: installing NeoVim
-  homebrew: name=neovim state=latest
+  community.general.homebrew:
+    name: neovim
+    state: latest
 
 - name: setting up AstroNvim
-  shell: |
-    git clone --depth 1 https://github.com/AstroNvim/template ~/.config/nvim
-    rm -rf ~/.config/nvim/.git
+  ansible.builtin.git:
+    repo: https://github.com/AstroNvim/template
+    dest: "{{ ansible_env.HOME }}/.config/nvim"
+    depth: 1
+
+- name: remove AstroNvim git metadata
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/nvim/.git"
+    state: absent

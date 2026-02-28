@@ -1,2 +1,4 @@
 - name: "Install Python Version Management (pyenv)"
-  homebrew: name=pyenv state=latest
+  community.general.homebrew:
+    name: pyenv
+    state: latest

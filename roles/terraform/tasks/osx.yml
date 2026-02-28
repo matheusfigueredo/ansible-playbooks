@@ -1,2 +1,4 @@
 - name: Install Terraform
-  homebrew: name=terraform state=latest
+  community.general.homebrew:
+    name: terraform
+    state: latest

@@ -1,9 +1,12 @@
-- name: "Install Java Version Management (jEnv)"
-  homebrew: name=jenv state=latest
-
-- name: "Set up Java Version Management (jEnv)"
-  shell: |
-    echo 'export PATH="$HOME/.jenv/bin:$PATH"' >> ~/.zshrc
-    echo 'eval "$(jenv init -)"' >> ~/.zshrc
+- name: Install SDKMAN
+  ansible.builtin.shell: "curl -s https://get.sdkman.io | bash"
   args:
     executable: /bin/bash
+    creates: "{{ ansible_env.HOME }}/.sdkman/bin/sdkman-init.sh"
+
+- name: Add SDKMAN init line to zshrc
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    line: 'source "$HOME/.sdkman/bin/sdkman-init.sh"'
+    state: present
+    create: true

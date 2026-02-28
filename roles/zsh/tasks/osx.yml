@@ -1,19 +1,27 @@
-- name: installing Zsh
-  homebrew: name=zsh state=latest
+- name: Install Zsh
+  community.general.homebrew:
+    name: zsh
+    state: latest
 
-- stat: path=$HOME/.oh-my-zsh
-  register: cur_dir
+- name: Install Oh-My-Zsh
+  ansible.builtin.git:
+    repo: https://github.com/ohmyzsh/ohmyzsh.git
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh"
+    depth: 1
 
-- name: installing Oh-My-Zsh
-  shell: >
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-  when: cur_dir.stat.exists == False
+- name: Set up zsh as default shell
+  ansible.builtin.command: chsh -s /bin/zsh "{{ ansible_user_id }}"
+  when: ansible_user_shell != "/bin/zsh"
 
-- name: setting up zsh as default shell
-  shell: >
-    chsh -s /bin/zsh
+- name: Install powerlevel10k plugin
+  ansible.builtin.git:
+    repo: https://github.com/romkatv/powerlevel10k.git
+    dest: "{{ ansible_env.HOME }}/.powerlevel10k"
+    depth: 1
 
-- name: installing powerlevel10k plugin
-  shell: |
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.powerlevel10k
-    echo 'source ~/.powerlevel10k/powerlevel10k.zsh-theme' >>~/.zshrc
+- name: Add powerlevel10k theme to zshrc
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    line: "source ~/.powerlevel10k/powerlevel10k.zsh-theme"
+    state: present
+    create: true
